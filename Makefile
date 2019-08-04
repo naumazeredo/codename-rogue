@@ -12,26 +12,46 @@ SOURCES=\
 				..\main.cpp
 
 
-SDL2_LIB=C:\libs\SDL2-2.0.10
+# SDL2
+SDL2=C:\libs\SDL2-2.0.10
+SDL2_LIBDIR=$(SDL2)\lib\$(TARGET)
+SDL2_INC=$(SDL2)\include
 
-SDL2_LIBDIR=$(SDL2_LIB)\lib\$(TARGET)
-SDL2_LIBINC=$(SDL2_LIB)\include
+# GLEW
+GLEW=C:\libs\glew-2.1.0
+GLEW_LIBDIR=$(GLEW)\lib\$(TARGET)
+GLEW_INC=$(GLEW)\include
 
 
 LIBS=\
 		 $(SDL2_LIBDIR)\SDL2.lib \
-		 $(SDL2_LIBDIR)\SDL2main.lib
+		 $(SDL2_LIBDIR)\SDL2main.lib \
+		 $(GLEW_LIBDIR)\glew32.lib \
+		 $(GLEW_LIBDIR)\glew32s.lib \
+		 opengl32.lib \
 
 INCLUDES=\
-				 -I$(SDL2_LIBINC)
+				 -I$(SDL2_INC) \
+				 -I$(GLEW_INC) \
+
+DLLS=\
+		 $(SDL2)\lib\$(TARGET)\SDl2.dll \
+		 $(GLEW)\bin\$(TARGET)\glew32.dll \
+
 
 all: windows
 
-# @Incomplete copy dlls
 windows:
 	mkdir -p build
 	cd build
-	$(CC) $(FLAGS) $(SOURCES) $(INCLUDES) $(LIBS) -link /machine:$(TARGET) -entry:WinMainCRTStartup -subsystem:WINDOWS
+	cp $(DLLS) .
+	$(CC) $(FLAGS) $(SOURCES) $(INCLUDES) $(LIBS) -link /machine:$(TARGET) -entry:WinMainCRTStartup -subsystem:WINDOWS -out:$(EXECUTABLE)
+	cd ..
+
+run: windows
+	cd build
+	.\$(EXECUTABLE)
+	cd ..
 
 clean:
-	rm build
+	rm -r build
