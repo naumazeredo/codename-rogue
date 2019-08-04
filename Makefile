@@ -10,6 +10,7 @@ FLAGS=-std:c++17 -Zi -FC -MD -DIMGUI_IMPL_OPENGL_LOADER_GLEW
 # @FixIt remove ..\ from sources (build dir)
 SOURCES=\
 				..\main.cpp \
+				..\debug.cpp \
 				..\imgui\imgui*.cpp \
 
 
@@ -40,7 +41,7 @@ DLLS=\
 		 $(GLEW)\bin\$(TARGET)\glew32.dll \
 
 
-all: windows
+all: run
 
 windows:
 	mkdir -p build
@@ -49,7 +50,7 @@ windows:
 	cp $(DLLS) .
 	cd ..
 
-run:
+run: windows
 	cd build
 	.\$(EXECUTABLE)
 	cd ..
