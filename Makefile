@@ -5,11 +5,12 @@ CC=cl.exe
 LINK=link.exe
 TARGET=x64
 
-FLAGS=-std:c++17 -Zi -FC -MD
+FLAGS=-std:c++17 -Zi -FC -MD -DIMGUI_IMPL_OPENGL_LOADER_GLEW
 
 # @FixIt remove ..\ from sources (build dir)
 SOURCES=\
-				..\main.cpp
+				..\main.cpp \
+				..\imgui\imgui*.cpp \
 
 
 # SDL2
@@ -22,7 +23,6 @@ GLEW=C:\libs\glew-2.1.0
 GLEW_LIBDIR=$(GLEW)\lib\$(TARGET)
 GLEW_INC=$(GLEW)\include
 
-
 LIBS=\
 		 $(SDL2_LIBDIR)\SDL2.lib \
 		 $(SDL2_LIBDIR)\SDL2main.lib \
@@ -31,6 +31,7 @@ LIBS=\
 		 opengl32.lib \
 
 INCLUDES=\
+				 -I..\imgui \
 				 -I$(SDL2_INC) \
 				 -I$(GLEW_INC) \
 
@@ -44,11 +45,11 @@ all: windows
 windows:
 	mkdir -p build
 	cd build
+	$(CC) $(FLAGS) $(INCLUDES) $(SOURCES) $(LIBS) -link /machine:$(TARGET) -entry:WinMainCRTStartup -subsystem:WINDOWS -out:$(EXECUTABLE)
 	cp $(DLLS) .
-	$(CC) $(FLAGS) $(SOURCES) $(INCLUDES) $(LIBS) -link /machine:$(TARGET) -entry:WinMainCRTStartup -subsystem:WINDOWS -out:$(EXECUTABLE)
 	cd ..
 
-run: windows
+run:
 	cd build
 	.\$(EXECUTABLE)
 	cd ..
