@@ -1,17 +1,19 @@
-# @Incomplete configure better / Cross-compilation
+# @Incomplete add Linux, emscripten (Web) and mobile
 EXECUTABLE=rogue.exe
 
 CC=cl.exe
 LINK=link.exe
 TARGET=x64
 
-FLAGS=-std:c++17 -Zi -FC -MD -DIMGUI_IMPL_OPENGL_LOADER_GLEW
+FLAGS=-std:c++17 -Zi -FC -MD -EHsc
+
+DEFINES=\
+				-DIMGUI_IMPL_OPENGL_LOADER_GLEW
 
 # @FixIt remove ..\ from sources (build dir)
 SOURCES=\
-				..\main.cpp \
-				..\debug.cpp \
-				..\imgui\imgui*.cpp \
+				..\*.cpp \
+				..\imgui\*.cpp \
 
 
 # SDL2
@@ -43,17 +45,17 @@ DLLS=\
 
 all: run
 
+#$(CC) $(FLAGS) $(DEFINES) $(INCLUDES) $(SOURCES) $(LIBS) -link /machine:$(TARGET) -entry:WinMainCRTStartup -subsystem:WINDOWS -out:$(EXECUTABLE)
 windows:
 	mkdir -p build
 	cd build
-	$(CC) $(FLAGS) $(INCLUDES) $(SOURCES) $(LIBS) -link /machine:$(TARGET) -entry:WinMainCRTStartup -subsystem:WINDOWS -out:$(EXECUTABLE)
+	$(CC) $(FLAGS) $(DEFINES) $(INCLUDES) $(SOURCES) $(LIBS) -link /machine:$(TARGET) -subsystem:console -out:$(EXECUTABLE)
 	cp $(DLLS) .
 	cd ..
 
 run: windows
-	cd build
-	.\$(EXECUTABLE)
-	cd ..
+	.\build\$(EXECUTABLE)
 
 clean:
-	rm -r build
+	rm -rf build
+	rm -f imgui.ini

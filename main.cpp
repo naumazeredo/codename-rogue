@@ -5,6 +5,7 @@
 #include <GL/glew.h>
 
 #include "debug.h"
+#include "shaders.h"
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 1280;
@@ -15,7 +16,24 @@ ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 SDL_Window* window = nullptr;
 SDL_GLContext gl_context;
 
+const GLfloat g_vertex_buffer_data[] = {
+  -1.0f, -1.0f, 0.0f,
+   1.0f, -1.0f, 0.0f,
+   0.0f,  1.0f, 0.0f
+};
+
 void run() {
+  GLuint vertex_array_id;
+  glGenVertexArrays(1, &vertex_array_id);
+  glBindVertexArray(vertex_array_id);
+
+  GLuint vertex_buffer;
+  glGenBuffers(1, &vertex_buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+
+  GLuint program_id = load_shaders("data/default.vertexshader", "data/default.fragmentshader");
+
   u8 running = 1;
   while (running) {
     // Input
@@ -34,6 +52,7 @@ void run() {
           break;
 
           case SDLK_r:
+            fflush(stdout);
             clear_color = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
           break;
 
@@ -50,7 +69,23 @@ void run() {
 
     // Rendering
     glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glUseProgram(program_id);
+
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+    glVertexAttribPointer(
+      0,
+      3,
+      GL_FLOAT,
+      GL_FALSE,
+      0,
+      (void*)0
+    );
+
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDisableVertexAttribArray(0);
 
     show_debug_window(window);
 
@@ -77,9 +112,9 @@ void setup() {
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
   window = SDL_CreateWindow("Codename Rogue",
-                                        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                        SCREEN_WIDTH, SCREEN_HEIGHT,
-                                        SDL_WINDOW_OPENGL);
+                            SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                            SCREEN_WIDTH, SCREEN_HEIGHT,
+                            SDL_WINDOW_OPENGL);
 
   if (window == nullptr) {
     printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());

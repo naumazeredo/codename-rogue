@@ -1,6 +1,8 @@
 #include "debug.h"
 
-bool show_demo_window = true;
+// @Completeness remove ini file from ImGui
+
+bool show_demo_window = false;
 bool show_another_window = false;
 extern ImVec4 clear_color;
 
@@ -10,6 +12,7 @@ void setup_debug(SDL_Window* window, SDL_GLContext gl_context) {
   // Setup Dear ImGui context
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
+
   //ImGuiIO& io = ImGui::GetIO(); (void)io;
   //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
   //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
