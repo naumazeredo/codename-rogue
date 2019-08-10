@@ -10,5 +10,6 @@
 
 void setup_debug(SDL_Window*, SDL_GLContext);
 void cleanup_debug();
+void handle_debug_input(SDL_Event*);
 
 void show_debug_window(SDL_Window*);

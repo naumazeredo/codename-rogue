@@ -2,10 +2,10 @@
 #include <stdio.h>
 
 #include <SDL.h>
-#include <GL/glew.h>
 
 #include "debug.h"
 #include "shaders.h"
+#include "render.h"
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 1280;
@@ -16,30 +16,15 @@ ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 SDL_Window* window = nullptr;
 SDL_GLContext gl_context;
 
-const GLfloat g_vertex_buffer_data[] = {
-  -1.0f, -1.0f, 0.0f,
-   1.0f, -1.0f, 0.0f,
-   0.0f,  1.0f, 0.0f
-};
-
 void run() {
-  GLuint vertex_array_id;
-  glGenVertexArrays(1, &vertex_array_id);
-  glBindVertexArray(vertex_array_id);
-
-  GLuint vertex_buffer;
-  glGenBuffers(1, &vertex_buffer);
-  glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
-
-  GLuint program_id = load_shaders("data/default.vertexshader", "data/default.fragmentshader");
+  add_to_render(-0.75f, -0.75f, 1.5f, 1.5f, 0.0f);
 
   u8 running = 1;
   while (running) {
     // Input
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
-      ImGui_ImplSDL2_ProcessEvent(&event);
+      handle_debug_input(&event);
 
       if (event.type == SDL_QUIT) {
         running = 0;
@@ -52,7 +37,6 @@ void run() {
           break;
 
           case SDLK_r:
-            fflush(stdout);
             clear_color = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
           break;
 
@@ -71,21 +55,7 @@ void run() {
     glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glUseProgram(program_id);
-
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-    glVertexAttribPointer(
-      0,
-      3,
-      GL_FLOAT,
-      GL_FALSE,
-      0,
-      (void*)0
-    );
-
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    glDisableVertexAttribArray(0);
+    render();
 
     show_debug_window(window);
 
@@ -132,6 +102,8 @@ void setup() {
   }
 
   setup_debug(window, gl_context);
+
+  setup_rendering();
 }
 
 void cleanup() {

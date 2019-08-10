@@ -31,6 +31,10 @@ void cleanup_debug() {
   ImGui::DestroyContext();
 }
 
+void handle_debug_input(SDL_Event* event) {
+  ImGui_ImplSDL2_ProcessEvent(event);
+}
+
 void show_debug_window(SDL_Window* window) {
   ImGuiIO& io = ImGui::GetIO();
 
