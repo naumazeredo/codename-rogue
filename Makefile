@@ -59,3 +59,8 @@ run: windows
 clean:
 	rm -rf build
 	rm -f imgui.ini
+
+linux:
+	mkdir -p build
+	cd build
+	g++ -I imgui/ *.cpp imgui/*.cpp -lm -lGLEW -lGL -D_REENTRANT -I/usr/include/SDL2 -lSDL2 -DIMGUI_IMPL_OPENGL_LOADER_GLEW

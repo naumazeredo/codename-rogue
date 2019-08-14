@@ -1,6 +1,6 @@
 #version 330 core
 
-smooth in vec3 vertex_color;
+in vec3 vertex_color;
 
 out vec3 out_color;
 

@@ -18,6 +18,7 @@ SDL_GLContext gl_context;
 
 void run() {
   add_to_render(-0.75f, -0.75f, 1.5f, 1.5f, 0.0f);
+  bind_buffers();
 
   u8 running = 1;
   while (running) {
@@ -53,11 +54,11 @@ void run() {
 
     // Rendering
     glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     render();
 
-    show_debug_window(window);
+    render_debug_window(window);
 
     SDL_GL_SwapWindow(window);
   }
